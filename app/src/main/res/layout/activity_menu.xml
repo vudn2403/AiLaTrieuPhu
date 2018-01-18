@@ -2,9 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
     <ImageView
+        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="d"/>
+        android:src="@drawable/bg_ailatrieuphu"/>
+
+    <Button
+        android:layout_marginTop="32dp"
+        android:id="@+id/btn_play_game"
+        android:text="Chơi ngay"
+        style="@style/ButtonMenu"/>
+    <Button
+        android:id="@+id/btn_guide"
+        android:text="Hướng dẫn"
+        style="@style/ButtonMenu"/>
+    <Button
+        android:id="@+id/btn_high_score"
+        android:text="Điểm cao"
+        style="@style/ButtonMenu" />
 </LinearLayout>
