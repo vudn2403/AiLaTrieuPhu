@@ -9,7 +9,7 @@
     </style>
 
     <style name="Question">
-        <item name="android:textColor">@color/Yellow</item>
+        <item name="android:textColor">@color/colorYellow</item>
         <item name="android:textSize">18sp</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_width">match_parent</item>

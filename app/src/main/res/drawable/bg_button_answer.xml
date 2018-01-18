@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_selected="true">
-        <ripple android:color="@color/colorPrimary">
-            <shape>
-                <solid android:color="@color/colorBlue"/>
-                <stroke android:width="2dp"
-                    android:color="@color/colorPrimary"/>
-            </shape>
-        </ripple>
-
+        <ripple android:color="@color/colorBlue"/>
+        <shape>
+            <solid android:color="@color/colorBlue" />
+            <stroke android:width="2dp" android:color="@color/colorPrimary" />
+        </shape>
     </item>
-
+    <item android:state_pressed="true">
+        <ripple android:color="@color/colorBlue" />
+    </item>
     <item>
         <shape>
-            <solid android:color="@color/DeepPurple"/>
-            <stroke android:width="2dp"
-                android:color="@color/colorPrimary"/>
+            <solid android:color="@color/colorDeepPurple" />
+            <stroke android:width="2dp" android:color="@color/colorPrimary" />
         </shape>
     </item>
 </selector>

@@ -7,8 +7,8 @@
     <color name="colorRed">#F44336</color>
     <color name="colorGreen">#4CAF50</color>
     <color name="colorOrange">#FF5722</color>
-    <color name="nonColorDarkPrimary">#dc7b1fa2</color>
-    <color name="nonColorPrimary">#c89c27b0</color>
-    <color name="DeepPurple">#512DA8</color>
-    <color name="Yellow">#FFEB3B</color>
+    <color name="nonColorDarkPrimary">#c87b1fa2</color>
+    <color name="nonColorPrimary">#969c27b0</color>
+    <color name="colorDeepPurple">#512DA8</color>
+    <color name="colorYellow">#FFEB3B</color>
 </resources>
