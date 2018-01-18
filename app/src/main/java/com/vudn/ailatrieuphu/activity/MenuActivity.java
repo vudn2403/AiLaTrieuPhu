@@ -1,10 +1,13 @@
 package com.vudn.ailatrieuphu.activity;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Explode;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 
 import com.vudn.ailatrieuphu.R;
@@ -18,6 +21,8 @@ public class MenuActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+        getWindow().setAllowEnterTransitionOverlap(true);
         setContentView(R.layout.activity_menu);
         initializeComponents();
     }
@@ -39,7 +44,8 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void startGame() {
+        getWindow().setExitTransition(new Explode());
         Intent intent = new Intent(MenuActivity.this, MainActivity.class);
-        startActivity(intent);
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
 }
