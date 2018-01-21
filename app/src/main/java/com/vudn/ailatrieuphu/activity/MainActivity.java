@@ -1,5 +1,6 @@
 package com.vudn.ailatrieuphu.activity;
 
+import android.app.ActivityOptions;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -30,7 +31,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int MSG_CHECK_QUESTION = 100;
     private static final int MSG_NEXT_QUESTION = 101;
-    private static final int MSG_END_GAME = 102;
+    private static final int MSG_SHOW_DIALOG_WHEN_ANSWER_FAIL = 102;
+    private static final int MSG_END_GAME = 103;
+    private static final int MSG_UPDATE_TIME = 104;
     private static final int ANSWER_CASE_A = 1;
     private static final int ANSWER_CASE_B = 2;
     private static final int ANSWER_CASE_C = 3;
@@ -51,8 +54,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int level;
     private int score;
+    private int time;
     private int trueCase;
     private boolean isSelected;
+    private boolean isPlaying;
 
     private Handler handler;
 
@@ -93,10 +98,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
 
                     case MSG_END_GAME:
-                        Intent intent = new Intent(MainActivity.this, MenuActivity.class);
-                        startActivity(intent);
+                        backToMenuActivity();
                         break;
 
+                    case MSG_SHOW_DIALOG_WHEN_ANSWER_FAIL:
+                        showDialogWhenAnswerFail();
+                        isPlaying = false;
+                        break;
+
+                    case MSG_UPDATE_TIME:
+                        txtTime.setText(String.valueOf(time));
+                        break;
                     default:
                         break;
                 }
@@ -108,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         level = 1;
         txtLevel.setText("Câu " + level);
         questions = questionManager.createListQuestion();
+        isPlaying = true;
         createQuestion();
         countTime();
     }
@@ -177,28 +190,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 default:
                     break;
             }
-            AlertDialog builder =
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("Bạn đã trả lời sai ở câu số " + level)
-                            .setMessage("Bạn có đồng ý quay lại màn hình chính?")
-                            .setCancelable(false)
-                            .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Message msg = new Message();
-                                    msg.what = MSG_END_GAME;
-                                    handler.sendMessage(msg);
-                                }
-                            })
-                            .show();
-
+            Message msg = new Message();
+            msg.what = MSG_SHOW_DIALOG_WHEN_ANSWER_FAIL;
+            handler.sendMessageDelayed(msg, 2000);
         }
+    }
+
+    private void showDialogWhenAnswerFail(){
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setTitle("Bạn đã trả lời sai ở câu số " + level)
+                .setMessage("Bạn sẽ ra về với phần thưởng " + score)
+                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        backToMenuActivity();
+                    }
+                })
+                .show();
+    }
+
+    private void backToMenuActivity() {
+        Intent intent = new Intent(MainActivity.this, MenuActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void nextQuestion(View view) {
         if (level < 15) {
             level++;
             txtLevel.setText("Câu " + level);
+
             ((Button) view).setBackgroundResource(R.drawable.bg_button_answer);
             ((Button) view).setSelected(false);
             createQuestion();
@@ -220,6 +242,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             btnCaseC.setText("C: " + question.getCaseC());
             btnCaseD.setText("D: " + question.getCaseD());
             trueCase = question.getTrueCase();
+            time = 30;
+            txtTime.setText(String.valueOf(time));
         }
     }
 
@@ -227,10 +251,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                while (true){
+                while (isPlaying){
                     Message msg = new Message();
-                    msg.what = 1000;
+                    msg.what = MSG_UPDATE_TIME;
                     handler.sendMessage(msg);
+                    if (time > 0){
+                        if (!isSelected){
+                            time --;
+                        }
+                    }
+                    else {
+                        Message msg_2 = new Message();
+                        msg.what = MSG_SHOW_DIALOG_WHEN_ANSWER_FAIL;
+                        handler.sendMessage(msg_2);
+                    }
                     try{
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -241,48 +275,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         };
         Thread thread = new Thread(runnable);
         thread.start();
-    }
-
-    private class CountTimeTask extends AsyncTask<Void, Integer, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            for (int i = 30; i > 0; i--) {
-                publishProgress(i);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            txtTime.setText(String.valueOf(values[0]));
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            AlertDialog builder =
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("Bạn đã hết thời gian và chưa đưa ra được câu trả lời")
-                            .setMessage("Bạn dừng lại ở câu số " + (level - 1) + " và ra về với mức tiền thưởng ")
-                            .setCancelable(false)
-                            .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Message msg = new Message();
-                                    msg.what = MSG_END_GAME;
-                                    handler.sendMessage(msg);
-                                }
-                            })
-                            .show();
-        }
     }
 }
